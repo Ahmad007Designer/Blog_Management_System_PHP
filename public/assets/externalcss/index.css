@@ -1,0 +1,66 @@
+body {
+    padding-top: 50px;
+    overflow-x: hidden;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+    font-family: 'Inter', sans-serif;
+}
+
+.editor-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 900px;
+    margin: auto;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e0e0e0;
+}
+
+.header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 600;
+    color: #ff3b30;
+}
+
+.action-buttons a,
+.action-buttons button {
+    text-decoration: none;
+    margin-left: 10px;
+    font-size: 14px;
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: 1px solid #f08306;
+    color: #fff;
+    background-color: #f08306;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.save-btn {
+    background-color: #f08306;
+    color: #fff;
+    border: none;
+}
+
+
+.title-input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 18px;
+    border-radius: 8px;
+    border: 1px solid #bec8c8;
+    margin-bottom: 24px;
+    background: #f3f3f3;
+}
+
+.ck-editor__editable[role="textbox"] {
+    min-height: 300px;
+}
