@@ -2,6 +2,7 @@
     namespace App\Controllers;
     use CodeIgniter\Controller;
     use App\Models\UserModel;
+    use App\Models\PostModel;
 
     class Auth extends Controller{
         public function login(){
@@ -10,9 +11,34 @@
         public function signup(){
             return view("auth/register");
         }
+        
         public function home(){
-            return view("dashboard/home");
+
+            if ($this->request->getMethod() === 'post') {
+                $userId = session()->get('user_id'); 
+                  if (!$userId) {
+                    $userId = 1; 
+                }
+
+                $data = [
+                'title'    => $this->request->getPost('title'),
+                'content'  => $this->request->getPost('content'),
+                'user_id'  => $userIds
+                ];
+
+                $model = new PostModel();
+                $model->insert($data);
+
+                $db = \Config\Database::connect();
+                echo $db->getLastQuery(); die;
+
+                return redirect()->to('posts/create')->with('success', 'Post saved successfully!');
+            }
+
+            return view('posts/create');
         }
+
+
         public function logout(){
         session()->destroy();
         return redirect()->to(base_url('auth/login'))->with('success', 'Logged out successfully');
@@ -53,7 +79,6 @@
         $email=$this->request->getPost('email');
         $password =$this->request->getPost('password');
 
-        //checking for if user email already exists
         $user=$userModel->where('email',$email)->first();
 
         if($user){
@@ -65,7 +90,7 @@
                     'isLoggedIn' =>true
                 ]);
 
-                return redirect()->to('/auth/dashboard/home');
+                return redirect()->to('/posts/create');
 
             }else{
                 return redirect()->to('/auth/login')->with('error', 'Invalid password.');
