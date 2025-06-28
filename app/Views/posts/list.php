@@ -1,81 +1,78 @@
 <?= view('auth/header') ?>
 
 <div class="container mt-5">
-    <div class="card shadow-sm">
-        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center bg-white">
-            <h4 class="mb-2 mb-md-0">All Posts</h4>
-            <a href="<?= base_url('posts/create') ?>" class="btn btn-teal text-white"style="background-color: rgb(240, 131, 6);" >
-                <i class="bi bi-plus-circle me-1"></i> Create New Post
-            </a>
-        </div>
-
-        <div class="card-body">
-            <div class="mb-3">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search by Author Name...">
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover align-middle text-center" id="postsTable">
-
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Content</th>
-                            <th>Author</th>
-                            <th>Created At</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($posts)): ?>
-                            <?php foreach ($posts as $post): ?>
-                                <tr>
-                                    <td><?= esc($post->id) ?></td>
-                                    <td><?= esc($post->title) ?></td>
-                                    <td class="text-start"><?= esc(strip_tags($post->content)) ?></td>
-                                    <td><?= esc($post->author) ?></td>
-                                    <td><?= esc($post->created_at) ?></td>
-                                    <td>
-                                        <div class="d-flex flex-wrap justify-content-center gap-1">
-                                            <a href="<?= base_url('posts/view/' . $post->id) ?>" class="btn btn-sm  text-white" style="background-color: rgba(0, 128, 128, 1)" title="View" >
-                                                <i class="bi bi-eye"></i>
-                                            </a>
-                                            <a href="<?= base_url('posts/edit/' . $post->id) ?>" class="btn btn-sm  text-white" style="background-color: rgb(240, 131, 6);" title="Edit">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                            <a href="<?= base_url('posts/delete/' . $post->id) ?>" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this post?')">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="6" class="text-center">No posts found.</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            
-
-            </div>
-        </div>
+   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h3 class="fw-bold mb-0">All Posts</h3>
+    
+    <div class="d-flex flex-wrap gap-2">
+        <a href="<?= base_url('posts/my-posts') ?>" class="btn text-white" style="background-color: rgb(240, 131, 6);">
+            <i class="bi bi-arrow-left-circle me-1"></i> Back My Posts
+        </a>
+        <a href="<?= base_url('posts/create') ?>" class="btn text-white" style="background-color: rgb(240, 131, 6);">
+            <i class="bi bi-plus-circle me-1"></i> Create New Post
+        </a>
     </div>
 </div>
 
 
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by Author Name...">
+    </div>
+
+    <?php if (!empty($posts)): ?>
+        <div class="row" id="postsContainer" >
+            <?php foreach ($posts as $post): ?>
+                <div class="col-md-12 mb-4 post-card" data-author="<?= strtolower($post['author']) ?>" >
+                   <div class="card shadow-sm border-0 cursor-pointer"
+                        onclick="window.location.href='<?= base_url('posts/view/' . $post['id']) ?>'"
+                        style="transition: transform 0.2s ease, box-shadow 0.2s ease; border-radius: 0.5rem; overflow: hidden;">
+
+                        <div class="card-body" style="background: rgb(214, 252, 252);">
+                            <h4 class="card-title fw-bold" style="color: rgba(0, 128, 128, 1);"><?= esc($post['title']) ?></h4>
+                            <p class="truncate-text card-text text-muted"><?= esc(strip_tags($post['content'])) ?></p>
+                            <div class="text-end small text-secondary">
+                                Created by: <strong style="color: rgba(0, 128, 128, 1);"><?= esc($post['author']) ?></strong> |
+                                <?= date('d M Y h:i A', strtotime($post['updated_at'])) ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <?php if (!empty($pager)) : ?>
+            <div class="d-flex justify-content-center mt-4">
+                <?= $pager->links('default', 'default_full') ?>
+            </div>
+        <?php endif; ?>
+
+    <?php else: ?>
+        <div class="alert alert-info text-center">No posts found.</div>
+    <?php endif; ?>
+</div>
+
+<script src="<?= base_url('assets/js/jQuery.js') ?>"></script>
+
 <script>
+    // Search filter
     document.getElementById('searchInput').addEventListener('keyup', function () {
         const query = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#postsTable tbody tr');
-
-        rows.forEach(row => {
-            const author = row.cells[3].textContent.toLowerCase();
-            row.style.display = author.includes(query) ? '' : 'none';
+        document.querySelectorAll('.post-card').forEach(card => {
+            const author = card.getAttribute('data-author');
+            card.style.display = author.includes(query) ? '' : 'none';
         });
     });
 </script>
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+        transition: transform 0.2s ease;
+    }
+    .cursor-pointer:hover {
+        transform: scale(1.01);
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+</style>
 
 <?= view('auth/footer') ?>

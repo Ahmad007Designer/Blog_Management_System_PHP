@@ -70,35 +70,39 @@
         }
 
         
-        public function authenticate(){
+     public function authenticate()
+        {
+            $session = session();
+            $userModel = new \App\Models\UserModel();
 
-        $session =session();
+            $email = $this->request->getPost('email');
+            $password = $this->request->getPost('password');
 
-        $userModel=new UserModel;
+            // Fetch user by email
+            $user = $userModel->where('email', $email)->first();
 
-        $email=$this->request->getPost('email');
-        $password =$this->request->getPost('password');
+            if ($user) {
+                // Verify password
+                if (password_verify($password, $user['password'])) {
+                    // Set session data
+                    $session->set([
+                        'user_id'     => $user['id'],
+                        'name'        => $user['name'],
+                        'email'       => $user['email'],
+                        'isLoggedIn'  => true,
+                    ]);
 
-        $user=$userModel->where('email',$email)->first();
-
-        if($user){
-            if(password_verify($password, $user['password'])){
-                $session->set([
-                    'user_id' =>$user['id'],
-                    'name' =>$user['name'],
-                    'email'   =>$user['email'],
-                    'isLoggedIn' =>true
-                ]);
-
-                return redirect()->to('/posts/create');
-
-            }else{
-                return redirect()->to('/auth/login')->with('error', 'Invalid password.');
+                    return redirect()->to('/posts/list');
+                } else {
+                    // Wrong password
+                    return redirect()->to('/auth/login')->with('error', 'Invalid password.');
+                }
+            } else {
+                // Email not found
+                return redirect()->to('/auth/login')->with('error', 'Email not registered.');
             }
-        }else{
-            return redirect()->to('/auth/login')->with('error', 'Email not registered.');
         }
-        }
+
     }
 
 ?>
