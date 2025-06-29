@@ -25,8 +25,7 @@
 
             return view('posts/list', $data);
         }
-        public function myPosts()
-        {
+        public function myPosts(){
             
             $session = session();
 
@@ -43,13 +42,6 @@
 
             return view('posts/my_posts', $data);
         }
-
-
-
-
-
-
-
 
         public function createView(){
            
@@ -75,8 +67,7 @@
             return view('posts/list', $data);
         }
 
-        public function createPost()
-        {
+        public function createPost(){
             $model = new PostModel();
             $userId = session()->get('user_id');
             $title = $this->request->getPost('title');
@@ -93,12 +84,12 @@
                 'user_id' => $userId,
               
             ];
+            session()->setFlashdata('success', 'Post created successfully.');
 
             $model->insert($data);
 
             return redirect()->to('posts/list');
         }
-
 
         public function editPost($id){
             $model = new PostModel();
@@ -118,45 +109,51 @@
 
             ];
             $model->update($id, $data);
+            session()->setFlashdata('success', 'Updated successfully.');
             return redirect()->to('posts/list');
         }
 
-        public function delete($id){
-            $model = new PostModel();
-            $model->delete($id);
-            return redirect()->to('posts/list');
-        }
-
-//ajax 
-    //  public function delete($id)
-    //     {
-    //         if ($this->request->isAJAX()) {
-    //             $postModel = new PostModel();
-
-    //             if ($postModel->delete($id)) {
-    //                 return $this->response->setJSON(['status' => 'deleted']);
-    //             } else {
-    //                 return $this->response->setJSON(['status' => 'error']);
-    //             }
-    //         }
-
-    //         return $this->response->setJSON(['status' => 'invalid']);
-    //     }
-
-
-
-        public function savePost(){
-        return view('posts/save');
-        }
-
-        public function view($id)
-        {
+        public function view($id){
             $model = new PostModel();
             $post = $model->getPostWithAuthor($id);
             
             return view('posts/view', ['post' => $post]);
         }
+        
+        // public function delete($id){
+        //     $model = new PostModel();
+        //     $model->delete($id);
+        //     return redirect()->to('posts/list');
+        // }
 
+        // public function savePost(){
+        //     return view('posts/save');
+        // }
+
+
+     public function delete($id){
+    if ($this->request->isAJAX() && $this->request->getMethod() === 'post') {
+        $model = new \App\Models\PostModel();
+
+        if ($model->find($id)) {
+            $model->delete($id);
+            return $this->response->setJSON([
+                'status' => 'success',
+                'message' => 'Post deleted successfully.'
+            ]);
+        }
+
+        return $this->response->setStatusCode(404)->setJSON([
+            'status' => 'error',
+            'message' => 'Post not found.'
+        ]);
+    }
+
+    return $this->response->setStatusCode(400)->setJSON([
+        'status' => 'error',
+        'message' => 'Invalid request.'
+    ]);
+}
 
 
 

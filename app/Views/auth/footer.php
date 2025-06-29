@@ -10,6 +10,8 @@
 
   <script src="<?= base_url('assets/js/bootstrap.min.js') ?>"></script>
   <script src="<?= base_url('assets/ckeditor/ckeditor.js') ?>"></script>
+
+
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       if (document.getElementById('content')) {
