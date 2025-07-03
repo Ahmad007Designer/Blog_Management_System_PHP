@@ -85,6 +85,66 @@ main {
 .pagination .page-item {
   margin: 0 5px;
 }
-tbody tr:hover {
-    background-color: rgba(0, 128, 128, 0.05);
+.author-highlight {
+        background: linear-gradient(90deg, rgba(240,131,6,0.1), rgba(0,128,128,0.05));
+        padding: 2rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.03);
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
+
+.cursor-pointer:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+  .custom-alert-container {
+        max-width: 650px;      
+        margin: 1rem auto; 
+    }
+    .custom-alert {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+        font-size: 1rem;
+    }
+
+    
+/* for view model -------------------------*/
+ .custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .custom-modal {
+        background: white;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        position: relative;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #444;
+    }

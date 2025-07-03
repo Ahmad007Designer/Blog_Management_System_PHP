@@ -8,11 +8,11 @@ use CodeIgniter\Router\RouteCollection;
 
 
 
-$routes->addRedirect('/', 'auth/login');
-$routes->get('auth/login', 'Auth::login');
-$routes->get('auth/register', 'Auth::signup');
-$routes->post('auth/register', 'Auth::register');
-$routes->post('auth/login', 'Auth::authenticate');
+$routes->addRedirect('/', 'users/login');
+$routes->get('users/login', 'Auth::login');
+$routes->get('users/register', 'Auth::signup');
+$routes->post('users/register', 'Auth::register');
+$routes->post('users/login', 'Auth::authenticate');
 $routes->get('logout', 'Auth::logout');
 
 //For post-route
@@ -20,7 +20,10 @@ $routes->get('logout', 'Auth::logout');
 //(Only for logged-in users)
 $routes->group('posts', ['filter' => 'auth'], function($routes) {
     $routes->get('list', 'Post::index');
+    $routes->post('list', 'Post::store');
+    $routes->post('store', 'Post::store');
     $routes->get('my-posts', 'Post::myPosts');
+    $routes->post('my-posts', 'Post::myPosts');
     $routes->get('create', 'Post::createView');
     $routes->post('create', 'Post::createPost');
 
@@ -30,9 +33,17 @@ $routes->group('posts', ['filter' => 'auth'], function($routes) {
     $routes->get('delete/(:num)', 'Post::delete/$1');
 
     $routes->get('save', 'Post::savePost');    
+    // $routes->post('delete/(:num)', 'Post::delete/$1');
+    $routes->get('author/(:any)', 'Post::authorPosts/$1');
 });
+$routes->match(['post', 'delete'], 'posts/delete/(:num)', 'Post::delete/$1');
+$routes->get('posts/view_ajax/(:num)', 'Post::view_ajax/$1');
+$routes->get('posts/edit_ajax/(:num)', 'Post::edit_ajax/$1');
+$routes->post('posts/update_ajax/(:num)', 'Post::update_ajax/$1');
 
-$routes->post('posts/delete/(:num)', 'Posts::delete/$1');
+
+
+
 
 
 

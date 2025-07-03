@@ -123,37 +123,143 @@
         // public function delete($id){
         //     $model = new PostModel();
         //     $model->delete($id);
-        //     return redirect()->to('posts/list');
+        //     return redirect()->to('posts/my-posts');
         // }
 
-        // public function savePost(){
-        //     return view('posts/save');
-        // }
+        public function delete($id){
+                $postModel = new \App\Models\PostModel();
 
+                // Check if post exists
+                $post = $postModel->find($id);
+                if (!$post) {
+                    return $this->response->setJSON(['status' => 'not_found']);
+                }
 
-     public function delete($id){
-    if ($this->request->isAJAX() && $this->request->getMethod() === 'post') {
-        $model = new \App\Models\PostModel();
-
-        if ($model->find($id)) {
-            $model->delete($id);
-            return $this->response->setJSON([
-                'status' => 'success',
-                'message' => 'Post deleted successfully.'
-            ]);
+                if ($postModel->delete($id)) {
+                    return $this->response->setJSON(['status' => 'deleted']);
+                } else {
+                    return $this->response->setJSON(['status' => 'error']);
+                }
         }
 
-        return $this->response->setStatusCode(404)->setJSON([
-            'status' => 'error',
-            'message' => 'Post not found.'
-        ]);
-    }
+        public function view_ajax($id){
+                $postModel = new  PostModel();
+                $post = $postModel
+                        ->select('posts.*, users.name as author')
+                        ->join('users', 'users.id = posts.user_id')
+                        ->where('posts.id', $id)
+                        ->first();
 
-    return $this->response->setStatusCode(400)->setJSON([
-        'status' => 'error',
-        'message' => 'Invalid request.'
-    ]);
-}
+                if (!$post) {
+                    return 'Post not found.';
+                }
+        
+                return view('posts/view_modal', ['post' => $post]);
+        }
+
+        public function edit_ajax($id)
+        {
+            $postModel = new PostModel();
+            $post = $postModel
+                        ->select('posts.*, users.name as author')
+                        ->join('users', 'users.id = posts.user_id')
+                        ->where('posts.id', $id)
+                        ->first();
+
+            if (!$post) {
+                return $this->response->setStatusCode(404)->setBody('Post not found');
+            }
+
+            return view('posts/edit_modal', ['post' => $post]);
+        }
+
+        public function update_ajax($id)
+        {
+            $postModel = new PostModel();
+
+            $data = [
+                'title'   => $this->request->getPost('title'),
+                'content' => $this->request->getPost('content'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ];
+
+            $postModel->update($id, $data);
+
+            return $this->response->setJSON(['status' => 'updated']);
+        }
+
+        public function create_Post()
+        {
+        return view('posts/create_post'); 
+        }
+
+       public function store()
+        {
+            $title = $this->request->getPost('title');
+            $content = $this->request->getPost('content');
+            $userId = session()->get('user_id');
+
+            if (!$title || !$content) {
+                return $this->response->setStatusCode(400)->setBody('Title or content missing');
+            }
+
+            $postModel = new \App\Models\PostModel();
+            $postModel->insert([
+                'title' => $title,
+                'content' => $content,
+                'user_id' => $userId,
+            ]);
+
+            // Now load and return updated list HTML
+            helper('text');
+            $posts = $postModel
+                ->select('posts.*, users.name as author')
+                ->join('users', 'users.id = posts.user_id')
+                ->orderBy('posts.created_at', 'DESC')
+                ->paginate(8, 'default');
+
+            $pager = $postModel->pager;
+
+            return view('posts/list_partial', ['posts' => $posts, 'pager' => $pager]);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public function savePost(){
+            return view('posts/save');
+        }
+
+        public function authorPosts($authorName)
+        {
+            $postModel = new PostModel();
+            $decodedAuthor = urldecode($authorName);
+
+            $posts = $postModel
+                ->select('posts.*, users.name as author')
+                ->join('users', 'users.id = posts.user_id')
+                ->where('LOWER(users.name)', strtolower($decodedAuthor))
+                ->orderBy('posts.created_at', 'DESC')
+                ->findAll();
+
+            $data = [
+                'authorName' => ucwords($decodedAuthor),
+                'postCount'  => count($posts),
+                'posts'      => $posts,
+            ];
+
+            return view('posts/author_posts', $data);
+        }
 
 
 

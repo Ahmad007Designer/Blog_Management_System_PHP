@@ -43,8 +43,5 @@
     <?php endif; ?>
   </div>
 </nav>
-
-
-
   <main class="flex-grow-1 mt-5 pt-4 container">
     <?= view('partials/alerts') ?>

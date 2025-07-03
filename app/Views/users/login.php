@@ -1,4 +1,4 @@
-<?= view('auth/header') ?>
+<?= view('users/header') ?>
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -8,7 +8,7 @@
                     <h2 style="color: rgba(0, 128, 128, 1); font-size: 2.5rem; font-weight: bold;">Login</h2>
                 </div>
                 <div class="card-body">
-                    <form action="<?= base_url('auth/login') ?>" method="post">
+                    <form action="<?= base_url('users/login') ?>" method="post">
                         <div class="mb-3">
                             <input type="email" name="email" id="email" class="form-control" placeholder="Email" style="border: 1px solid rgba(190, 200, 200, 1); background-color: rgba(220, 230, 230, 0.4); padding: 0.50rem 1rem;" required>
                         </div>
@@ -22,7 +22,7 @@
                         </div>
 
                         <div class="d-flex justify-content-center">
-                            <a href="<?=base_url('auth/register')?>" style="color: rgba(0, 128, 128, 1); font-size: 1.1rem; text-decoration: none;">Create an account?</a>
+                            <a href="<?=base_url('users/register')?>" style="color: rgba(0, 128, 128, 1); font-size: 1.1rem; text-decoration: none;">Create an account?</a>
                         </div>
                     </form>
                 </div>
@@ -31,4 +31,4 @@
     </div>
 </div>
 
-<?= view('auth/footer') ?>
+<?= view('users/footer') ?>

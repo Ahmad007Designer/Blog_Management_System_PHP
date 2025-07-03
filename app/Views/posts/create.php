@@ -1,32 +1,40 @@
-<?= view('auth/header') ?>
-
-<div class="editor-wrapper mt-5">
-  <div class="header-bar d-flex justify-content-end gap-2 mb-3">
-    <div class="action-buttons">
-      <a href="<?=base_url('posts/list') ?>" >View Post</a>
-      <button type="submit" form="postForm" class="save-btn">Save Post</button>
-
-
+<form id="createPostForm" method="POST">
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" name="title" class="form-control" required>
     </div>
-  </div>
 
-  <form action="" method="POST" id="postForm">
-    <label for="title">Post Title:</label>
-    <input type="text" name="title" class="title" placeholder="Latest Insights in Tech" required>
-    
-    <label for="content">Content:</label>
-    <textarea name="content" id="content" required></textarea>
-  </form>
-</div>
+    <div class="mb-3">
+        <label class="form-label">Content</label>
+        <textarea name="content" id="content" rows="10" class="form-control" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Publish</button>
+</form>
 
 <script>
-$(document).ready(function () {
-  $('.save-btn').click(function () {
-    $('#postForm').submit();
-  });
+document.getElementById('createPostForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    formData.set('content', CKEDITOR.instances['content'].getData());
+
+    fetch('<?= base_url('posts/store') ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Post created successfully!');
+            location.reload();
+        } else {
+            alert('Failed to create post.');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Error creating post.');
+    });
 });
-
 </script>
-
-
-<?= view('auth/footer') ?>

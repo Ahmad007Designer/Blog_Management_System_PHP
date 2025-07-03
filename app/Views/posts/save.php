@@ -1,4 +1,4 @@
-<?= view('auth/header') ?>
+<?= view('users/header') ?>
 
 <div class="editor-wrapper mt-5">
   <div class="header-bar d-flex justify-content-end gap-2 mb-3">
@@ -22,4 +22,4 @@
   </form>
 </div>
 
-<?= view('auth/footer') ?>
+<?= view('users/footer') ?>

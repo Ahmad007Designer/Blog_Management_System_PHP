@@ -1,4 +1,4 @@
-<?= view('auth/header') ?>
+<?= view('users/header') ?>
 
 <div class="container mt-5">
     <div class="card">
@@ -16,4 +16,4 @@
     </div>
 </div>
 
-<?= view('auth/footer') ?>
+<?= view('users/footer') ?>
