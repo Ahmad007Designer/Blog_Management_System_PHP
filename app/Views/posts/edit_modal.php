@@ -11,7 +11,7 @@
         <textarea id="content" name="content" class="form-control" rows="6"><?= $post['content'] ?></textarea>
     </div>
 
-    <button type="submit" class="btn btn-success">Update Post</button>
+    <button type="submit" class="btn text-white" style="background: rgba(0, 128, 128, 1);">Update Post</button>
 </form>
 
 <!-- CKEditor Script -->
@@ -24,5 +24,5 @@ function initCKEditor4() {
     }
     CKEDITOR.replace('content');
 }
-initCKEditor4(); // ✅ Call on load
+initCKEditor4();
 </script>

@@ -10,6 +10,7 @@
                 if (!session()->get('isLoggedIn')) {
                     return redirect()->to(base_url('login'));
                 }
+
                 helper('text');
                 $postModel = new PostModel();
                 $posts = $postModel
@@ -48,12 +49,6 @@
             return view('posts/create');
         }
 
-        public function fetch(){
-            $model = new PostModel();
-            $data = $model->findAll();
-            return $this->response->setJSON($data);
-        }
-        
         public function list(){
             helper('text');
             $db = \Config\Database::connect();
@@ -66,67 +61,8 @@
             $data['posts'] = $query->getResult();
             return view('posts/list', $data);
         }
-
-        public function createPost(){
-            $model = new PostModel();
-            $userId = session()->get('user_id');
-            $title = $this->request->getPost('title');
-            $content = $this->request->getPost('content');
-            $created_at = $this->request->getPost('created_at');
-
-            if (!$title) {
-                return "Title is missing! Check your form input name.";
-            }
-
-            $data = [
-                'title'   => $title,
-                'content' => $content,
-                'user_id' => $userId,
-              
-            ];
-            session()->setFlashdata('success', 'Post created successfully.');
-
-            $model->insert($data);
-
-            return redirect()->to('posts/list');
-        }
-
-        public function editPost($id){
-            $model = new PostModel();
-            $data['post'] = $model->find($id);
-            return view('posts/edit', $data);
-
-        }
-
-        public function update($id){
-
-            $model = new PostModel();
-            $data = [
         
-            'title' => $this->request->getPost('title'),
-            'content' => $this->request->getPost('content'),
-           
-
-            ];
-            $model->update($id, $data);
-            session()->setFlashdata('success', 'Updated successfully.');
-            return redirect()->to('posts/list');
-        }
-
-        public function view($id){
-            $model = new PostModel();
-            $post = $model->getPostWithAuthor($id);
-            
-            return view('posts/view', ['post' => $post]);
-        }
-        
-        // public function delete($id){
-        //     $model = new PostModel();
-        //     $model->delete($id);
-        //     return redirect()->to('posts/my-posts');
-        // }
-
-        public function delete($id){
+        public function deletePost($id){
                 $postModel = new \App\Models\PostModel();
 
                 // Check if post exists
@@ -142,14 +78,14 @@
                 }
         }
 
-        public function view_ajax($id){
+        public function viewPost($id){
                 $postModel = new  PostModel();
                 $post = $postModel
                         ->select('posts.*, users.name as author')
                         ->join('users', 'users.id = posts.user_id')
                         ->where('posts.id', $id)
                         ->first();
-
+                
                 if (!$post) {
                     return 'Post not found.';
                 }
@@ -157,8 +93,7 @@
                 return view('posts/view_modal', ['post' => $post]);
         }
 
-        public function edit_ajax($id)
-        {
+        public function editPost($id){
             $postModel = new PostModel();
             $post = $postModel
                         ->select('posts.*, users.name as author')
@@ -173,8 +108,7 @@
             return view('posts/edit_modal', ['post' => $post]);
         }
 
-        public function update_ajax($id)
-        {
+        public function updatePost($id){
             $postModel = new PostModel();
 
             $data = [
@@ -185,65 +119,126 @@
 
             $postModel->update($id, $data);
 
-            return $this->response->setJSON(['status' => 'updated']);
+            $updatedpost = $postModel
+                        ->select('posts.*, users.name as author')
+                        ->join('users', 'users.id = posts.user_id')
+                        ->where('posts.id', $id)
+                        ->first();
+                // print_r($updatedpost['id']);
+                // die;
+
+                // print_r($updatedpost);        
+                    $postHTML = '<div class="col-12 post-card mb-4" id="postctr-'. $updatedpost['id'] .'" data-author="'.strtolower($updatedpost['author']) .'">
+                                        <div class="card shadow-sm border-0" style="transition: transform 0.2s ease, box-shadow 0.2s ease; border-radius: 0.75rem; overflow: hidden;">
+                                            <div class="card-body" style="background: rgb(214, 252, 252); cursor: pointer;">
+                                                <!-- Post title and action buttons -->
+                                                <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap">
+                                                    <h4 class="card-title fw-bold mb-2" style="color: rgba(0, 128, 128, 1);">
+                                                    '.$updatedpost['title'].'                     
+                                                    </h4>
+                                                    <div class="d-flex flex-wrap gap-2" onclick="event.stopPropagation();">
+                                                    <button type="button" class="btn btn-sm text-white view-post-btn" data-id="'. $updatedpost['id'] .'" style="background-color: teal;" title="View">
+                                                    <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm text-white btn-edit-post" data-id="'. $updatedpost['id'] .'" style="background-color: orange;" title="Edit">
+                                                    <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger delete-post" data-id="'. $updatedpost['id'] .'" title="Delete">
+                                                    <i class="bi bi-trash"></i>
+                                                    </button>                                    
+                                                    </div>
+                                                </div>
+                                           
+                                                <p class="truncate-text card-text text-muted mb-3">'.esc(strip_tags($updatedpost['content'])).'</p>
+                                              
+                                                <div class="text-start small text-secondary">
+                                                    Created by: 
+                                                    <a href="'. base_url('posts/author/' . urlencode($updatedpost['author'])) .'" class="fw-semibold text-decoration-none" style="color: rgba(0, 128, 128, 1);">
+                                                    '. esc($updatedpost['author']).'</a>
+                                                </div>
+                                                <div class="text-end small text-secondary">    
+                                                    <div>Created: '. date('d M Y h:i A', strtotime($updatedpost['created_at'])) .'</div>
+                                                    <div>Updated: '. date('d M Y h:i A', strtotime($updatedpost['updated_at'])) .'</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>';
+            return $this->response->setJSON(['status' => 'updated', 'post_html'=> $postHTML]);
         }
 
-        public function create_Post()
-        {
-        return view('posts/create_post'); 
-        }
-
-       public function store()
-        {
+        public function storePost(){
+            $postModel = new PostModel();
+            
             $title = $this->request->getPost('title');
             $content = $this->request->getPost('content');
             $userId = session()->get('user_id');
 
-            if (!$title || !$content) {
-                return $this->response->setStatusCode(400)->setBody('Title or content missing');
+            if (!$title || !$content || !$userId) {
+                return $this->response->setJSON(['status' => 'error', 'message' => 'Missing data']);
             }
 
-            $postModel = new \App\Models\PostModel();
-            $postModel->insert([
+            // Save post
+                
+            $postModel->save([
                 'title' => $title,
                 'content' => $content,
-                'user_id' => $userId,
+                'user_id' => $userId
             ]);
+            $newPostId = $postModel->getInsertID();
 
-            // Now load and return updated list HTML
-            helper('text');
-            $posts = $postModel
-                ->select('posts.*, users.name as author')
-                ->join('users', 'users.id = posts.user_id')
-                ->orderBy('posts.created_at', 'DESC')
-                ->paginate(8, 'default');
+            // Fetch latest post to display
+            $db = \Config\Database::connect();
+            $builder = $db->table('posts');
+            $builder->select('posts.*, users.name as author');
+            $builder->join('users', 'users.id = posts.user_id');
+            $builder->where('posts.id', $newPostId);
+            $post = $builder->get()->getRowArray();
+            // print_r($post['id']);
+            // die;
+                
+            $createhtml =  '
+            <div class="col-12 post-card mb-4" id="postctr-'. $post['id'].'" data-author="'.strtolower($post        ['author']).' ">
+                <div class="card shadow-sm border-0" style="transition: transform 0.2s ease, box-shadow 0.2s ease; border-radius: 0.75rem; overflow: hidden;">
+                <div class="card-body" style="background: rgb(214, 252, 252); cursor: pointer;">
+                    <!-- Post title and action buttons -->
+                    <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap">
+                        <h4 class="card-title fw-bold mb-2" style="color: rgba(0, 128, 128, 1);">
+                            '.esc($post['title']).'
+                        </h4>
+                        <div class="d-flex flex-wrap gap-2" onclick="event.stopPropagation();">
+                            <button type="button" class="btn btn-sm text-white view-post-btn" data-id="'.$post['id'].'" style="background-color: teal;" title="View">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
 
-            $pager = $postModel->pager;
+                   
+                    <p class="truncate-text card-text text-muted mb-3">'.esc(strip_tags($post['content'])).'</p>
 
-            return view('posts/list_partial', ['posts' => $posts, 'pager' => $pager]);
+             
+                    <div class="text-start small text-secondary">
+                        Created by:
+                        <a href="'.base_url('posts/author/' . urlencode($post['author'])).'" class="fw-semibold text-decoration-none" style="color: rgba(0, 128, 128, 1);"> '.esc($post['author'])  .'</a>
+                    </div>
+                    <div class="text-end small text-secondary">
+                        <div>Created: '. date('d M Y h:i A', strtotime($post['created_at'])) .'</div>
+                        <div>Updated: '. date('d M Y h:i A', strtotime($post['updated_at'])) .'</div>
+                    </div>
+                    
+                    </div>
+                </div>
+            </div>';
+            return $this->response->setJSON([
+                    'status' => 'success',
+                    'html' => $createhtml
+            ]);
+        
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public function savePost(){
-            return view('posts/save');
-        }
-
-        public function authorPosts($authorName)
-        {
+        public function authorPosts($authorName){
             $postModel = new PostModel();
             $decodedAuthor = urldecode($authorName);
+            
 
             $posts = $postModel
                 ->select('posts.*, users.name as author')
@@ -261,9 +256,10 @@
             return view('posts/author_posts', $data);
         }
 
-
+        public function create_post(){
+            return view('posts/create');
+        }
 
     }
-
 
 ?>

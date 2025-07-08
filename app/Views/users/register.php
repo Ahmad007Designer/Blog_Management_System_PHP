@@ -47,7 +47,7 @@
                         </div>
 
                         <div class="d-flex center">
-                            <a href="<?=base_url('auth/login')?>" class=" m-auto mt-2"
+                            <a href="<?=base_url('users/login')?>" class=" m-auto mt-2"
                                 style="color: rgba(0, 128, 128, 1); font-size: 1.1rem; text-decoration: none;">Already
                                 have an account?</a>
                         </div>

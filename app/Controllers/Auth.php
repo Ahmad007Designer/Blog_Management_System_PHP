@@ -37,6 +37,7 @@
                 'email'=>$this->request->getPost('email'),
                 'password'=> password_hash($this->request->getPost('password'),PASSWORD_DEFAULT)
             ];
+            $userModel->save($data);
             return redirect()->to('users/login')->with('success','Registration Successfull. Please Login.');
         }
 

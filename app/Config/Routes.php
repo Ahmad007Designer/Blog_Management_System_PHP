@@ -20,26 +20,27 @@ $routes->get('logout', 'Auth::logout');
 //(Only for logged-in users)
 $routes->group('posts', ['filter' => 'auth'], function($routes) {
     $routes->get('list', 'Post::index');
-    $routes->post('list', 'Post::store');
-    $routes->post('store', 'Post::store');
+    $routes->post('list', 'Post::storePost');
+    $routes->post('store', 'Post::storePost');
     $routes->get('my-posts', 'Post::myPosts');
     $routes->post('my-posts', 'Post::myPosts');
     $routes->get('create', 'Post::createView');
-    $routes->post('create', 'Post::createPost');
-
-    $routes->get('view/(:num)', 'Post::view/$1');
-    $routes->get('edit/(:num)', 'Post::editPost/$1');
-    $routes->post('update/(:num)', 'Post::update/$1');
-    $routes->get('delete/(:num)', 'Post::delete/$1');
-
-    $routes->get('save', 'Post::savePost');    
-    // $routes->post('delete/(:num)', 'Post::delete/$1');
+    
     $routes->get('author/(:any)', 'Post::authorPosts/$1');
+    $routes->get('view_ajax/(:num)', 'Post::viewPost/$1');
+    $routes->get('edit_ajax/(:num)', 'Post::editPost/$1');
+    $routes->post('update_ajax/(:num)', 'Post::updatePost/$1');
+    $routes->get('create_post', 'Post::create_post');
+    $routes->match(['post', 'delete'], 'delete/(:num)', 'Post::deletePost/$1');
+    
+    // $routes->get('delete/(:num)', 'Post::delete/$1');
+    // $routes->post('update/(:num)', 'Post::update/$1');
+    // $routes->get('edit/(:num)', 'Post::editPost/$1');
+    // $routes->get('view/(:num)', 'Post::view/$1');
+    // $routes->post('create', 'Post::createPost');
+    // $routes->get('save', 'Post::savePost');    
+    // $routes->post('delete/(:num)', 'Post::delete/$1');
 });
-$routes->match(['post', 'delete'], 'posts/delete/(:num)', 'Post::delete/$1');
-$routes->get('posts/view_ajax/(:num)', 'Post::view_ajax/$1');
-$routes->get('posts/edit_ajax/(:num)', 'Post::edit_ajax/$1');
-$routes->post('posts/update_ajax/(:num)', 'Post::update_ajax/$1');
 
 
 

@@ -7,8 +7,13 @@
       </small>
   </footer>
 
+
+
+  <script src="<?= base_url('assets/js/jquery.js') ?>"></script>
+  <script src="<?= base_url('assets/js/post.js') ?>?v=<?= time() ?>"></script>
   <script src="<?= base_url('assets/js/bootstrap.min.js') ?>"></script>
   <script src="<?= base_url('assets/ckeditor/ckeditor.js') ?>"></script>
+
   <script>
       window.addEventListener('DOMContentLoaded', () => {
           if (document.getElementById('content')) {
@@ -17,6 +22,7 @@
       });
   </script>
 
+<!-- menue icon button -->
   <script>
       document.addEventListener('DOMContentLoaded', function() {
           const userBtn = document.getElementById('userBtn');
@@ -24,8 +30,7 @@
 
           userBtn.addEventListener('click', function(e) {
               e.stopPropagation();
-              userPanel.style.display = (userPanel.style.display === 'none' || userPanel.style.display ===
-                  '') ? 'block' : 'none';
+              userPanel.style.display = (userPanel.style.display === 'none' || userPanel.style.display ==='') ? 'block' : 'none';
           });
 
           document.addEventListener('click', function(e) {
@@ -45,6 +50,8 @@
     }, 3000);
 
   </script>
+  
 
-  </body>
+</body>
+
 </html>

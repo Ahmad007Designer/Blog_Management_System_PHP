@@ -7,10 +7,11 @@
   <link rel="stylesheet" href="<?= base_url('assets/externalcss/index.css') ?>" />
   <link rel="stylesheet" href="<?= base_url('assets/bootstrap-icons/bootstrap-icons.css') ?>">
 </head>
-
+<link rel="icon" type="image/png" href="<?= base_url('assets/images/favicon.png') ?>">
+<title>Blogify</title>
 <body class="d-flex flex-column min-vh-100">
-  <?php $session = session(); ?>
-
+  
+<?php $session = session(); ?>
  <nav class="navbar navbar-light fixed-top"
      style="background: rgba(0, 128, 128, 1); color: white; padding: 0.50rem 1rem; font-size: 1.25rem; font-weight: bold;">
   <div class="container-fluid d-flex justify-content-between align-items-center">

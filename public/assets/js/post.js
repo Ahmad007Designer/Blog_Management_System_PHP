@@ -1,91 +1,87 @@
-//for Deletion
 $(document).ready(function () {
-    console.log('post.js loaded');
+    // --- Search Filter by Author ---
+    $('#searchInput').on('keyup', function () {
+        const query = $(this).val().toLowerCase();
+        $('.post-card').each(function () {
+            const author = $(this).data('author');
+            $(this).toggle(author.toLowerCase().includes(query));
+        });
+    });
 
-    $(document).on('click', '.delete-post', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
 
-        console.log('Delete button clicked');
+    // --- View Post Modal ---
+    function viewbutton() {
+        $('.view-post-btn').off('click').on('click', function () {
+            const postId = $(this).data('id');
+            $('#viewPostModal').fadeIn();
+            $('#viewPostContent').html('<div class="text-center text-muted">Loading...</div>');
 
-        let id = $(this).data('id');
-        var thisEle = $(this);
-        if (confirm('Are you sure you want to delete this post?')) {
             $.ajax({
-                url: '/posts/delete/' + id,
-                type: 'POST',
-                data: { _method: 'DELETE' },
-                success: function (res) {
-                    console.log('Delete success:', res);
-                    if (res.status === 'deleted') {
-                        alert('Post deleted');
-                        // location.reload();
-                        thisEle.closest('.card').closest('.col-12').remove();
-                        // thisEle.closest('.post-card').remove();
-
-                    } else {
-                        alert('Delete failed.');
-                    }
+                url: '/posts/view_ajax/' + postId,
+                type: 'GET',
+                success: function (data) {
+                    $('#viewPostContent').html(data);
                 },
-                error: function (xhr) {
-                    console.error('Delete error:', xhr.responseText);
-                    alert('Error deleting post.');
+                error: function () {
+                    $('#viewPostContent').html('<div class="text-danger text-center">Failed to load post.</div>');
                 }
             });
-        }
-    });
-});
+        });
+    }
+    viewbutton();
 
-//for view window
-$(document).ready(function () {
-    $('.view-post-btn').on('click', function () {
-        const postId = $(this).data('id');
+    // --- Delete Post via AJAX ---
+    function deletebutton() {
+        $('.delete-post').off('click').on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-        // $('#viewPostModal').modal('show');
-        $('#viewPostModal').fadeIn();
-        $('#viewPostContent').html('<div class="text-center text-muted">Loading...</div>');
-
-        $.ajax({
-            url: '/posts/view_ajax/' + postId,
-            type: 'GET',
-            success: function (data) {
-                $('#viewPostContent').html(data);
-            },
-            error: function () {
-                $('#viewPostContent').html('<div class="text-danger text-center">Failed to load post.</div>');
+            const id = $(this).data('id');
+            const Button = $(this);
+            if (confirm('Are you sure you want to delete this post?')) {
+                $.ajax({
+                    url: '/posts/delete/' + id,
+                    type: 'POST',
+                    data: { _method: 'DELETE' },
+                    success: function (res) {
+                        if (res.status === 'deleted') {
+                            alert('Post deleted');
+                            Button.closest('.card').closest('.col-12').remove();
+                        } else {
+                            alert('Delete failed.');
+                        }
+                    },
+                    error: function () {
+                        alert('Error deleting post.');
+                    }
+                });
             }
         });
-    });
+    }
+    deletebutton();
 
-    $(document).on('click', '.close-btn, .custom-modal-overlay', function (e) {
-        if ($(e.target).is('.custom-modal-overlay') || $(e.target).is('.close-btn')) {
-            $('#viewPostModal').fadeOut();
-        }
-    });
-});
+    // --- Edit Post Modal ---
+    function editbutton() {
+        $('.btn-edit-post').off('click').on('click', function () {
+            const postId = $(this).data('id');
+            $('#editPostModal').fadeIn();
+            $('#editPostContent').html('<div class="text-center text-muted">Loading...</div>');
 
-//for updated and edit
-$(document).ready(function () {
-    // Open Edit Modal
-    $('.btn-edit-post').on('click', function () {
-        const postId = $(this).data('id');
-        $('#editPostModal').show();
-        $('#editPostContent').html('<div class="text-center text-muted">Loading...</div>');
-
-        $.ajax({
-            url: `/posts/edit_ajax/${postId}`,
-            type: 'GET',
-            success: function (data) {
-                $('#editPostContent').html(data);
-                // No need to call initCKEditor4 here; it's already called inside the view
-            },
-            error: function () {
-                $('#editPostContent').html('<div class="text-danger text-center">Failed to load editor.</div>');
-            }
+            $.ajax({
+                url: `/posts/edit_ajax/${postId}`,
+                type: 'GET',
+                success: function (data) {
+                    $('#editPostContent').html(data);
+                },
+                error: function () {
+                    $('#editPostContent').html('<div class="text-danger text-center">Failed to load editor.</div>');
+                }
+            });
         });
-    });
+    }
+    editbutton();
 
-    // Submit Update Form via AJAX
+    // --- Submit Edit Form via AJAX ---
     $(document).on('submit', '#editPostForm', function (e) {
         e.preventDefault();
 
@@ -107,7 +103,12 @@ $(document).ready(function () {
                 if (response.status === 'updated') {
                     alert('Post updated successfully');
                     $('#editPostModal').hide();
-                    location.reload(); // Optional: or dynamically update post
+                    $('#postctr-' + postId).remove();
+                    $('#postsContainer').prepend(response.post_html);
+
+                    editbutton();
+                    viewbutton();
+                    deletebutton();
                 } else {
                     alert('Update failed.');
                 }
@@ -118,10 +119,66 @@ $(document).ready(function () {
         });
     });
 
-    // Close modal when clicking overlay or close button
-    $(document).on('click', '.custom-modal-overlay, .close-btn', function (e) {
-        if ($(e.target).hasClass('custom-modal-overlay') || $(e.target).hasClass('close-btn')) {
-            $('#editPostModal').fadeOut();
+
+    // Open Create Modal
+    $('#createPostBtn').on('click', function () {
+        $('#createPostModal').fadeIn();
+        $('#createPostContent').html('<div class="text-center text-muted">Loading form...</div>');
+
+        $.ajax({
+            url: '/posts/create_post',
+            type: 'GET',
+            success: function (data) {
+                $('#createPostContent').html(data);
+            },
+            error: function () {
+                $('#createPostContent').html('<div class="text-danger text-center">Failed to load form.</div>');
+            }
+        });
+    });
+
+    // Submit Create Form
+    $(document).on('submit', '#createPostForm', function (e) {
+        e.preventDefault();
+
+        const form = $(this);
+        const formData = new FormData(this);
+
+        if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances.content) {
+            formData.set('content', CKEDITOR.instances.content.getData());
         }
+
+        $.ajax({
+            url: '/posts/store',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (res.status === 'success') {
+                    alert('Post created successfully');
+                    $('#createPostModal').fadeOut();
+                    $('#postsContainer').prepend(res.html);
+
+                    editbutton();
+                    deletebutton();
+                    viewbutton();
+                } else {
+                    alert(res.message || 'Failed to create post.');
+                }
+            },
+            error: function (xhr) {
+                console.error(xhr.responseText);
+                alert('Error while creating post.');
+            }
+        });
+    });
+
+    
+   // This version only closes when clicking the close button, not the overlay
+    $(document).on('click', '.close-btn', function (e) {
+        $('#editPostModal').fadeOut();
+        $('#viewPostModal').fadeOut();
+        $(this).closest('.custom-modal-overlay').fadeOut();
     });
 });
