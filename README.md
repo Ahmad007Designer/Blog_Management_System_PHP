@@ -1,68 +1,29 @@
-# CodeIgniter 4 Application Starter
+# Blogify – Blog Management System 📝
 
-## What is CodeIgniter?
+A simple and clean blog management system built using **CodeIgniter 4**, **PHP**, **AJAX**, and **MySQL**. Users can create, edit, view, and delete blog posts with a modern, responsive interface.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## 🚀 Features
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+- 🧩 Add, update, view, and delete blog posts (CRUD)
+- ⚡ AJAX-powered interactions (no page reload)
+- 🔐 User authentication (login/signup)
+- 📱 Responsive UI with Bootstrap
+- 🧹 Server-side validation using CodeIgniter 4
+- 🗃️ Posts listed with pagination and timestamps
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## 🛠️ Tech Stack
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+- **Backend:** PHP, CodeIgniter 4 (MVC)
+- **Frontend:** HTML, CSS, Bootstrap, jQuery, AJAX
+- **Database:** MySQL
 
-## Installation & updates
+## 📸 Screenshots
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+![register](https://github.com/user-attachments/assets/328704ac-81d8-451b-994d-d0b913d1990a)
+![login](https://github.com/user-attachments/assets/00635341-b51e-4dc7-905a-8a6f08011c50)
+![home](https://github.com/user-attachments/assets/e240df56-38ac-4f71-a0da-e27e15e750e6)
+![viewPOPUP](https://github.com/user-attachments/assets/861864d1-76a0-4144-b030-f8f4ce86ad7d)
+![CreatePost](https://github.com/user-attachments/assets/c5421c9b-31bf-4fa4-a367-5e8c47af2e85)
+![author_post](https://github.com/user-attachments/assets/4431c7ea-5a21-4adf-83a7-2baa68e97047)
+![author_namePost](https://github.com/user-attachments/assets/773a064e-bc49-424c-a011-126cbcebf883)
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
-
-## Setup
-
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
-
-## Important Change with index.php
-
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
-
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
-
-**Please** read the user guide for a better explanation of how CI4 works!
-
-## Repository Management
-
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
-
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
-
-## Server Requirements
-
-PHP version 8.1 or higher is required, with the following extensions installed:
-
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
-
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
-
-Additionally, make sure that the following extensions are enabled in your PHP:
-
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
